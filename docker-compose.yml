@@ -1,0 +1,31 @@
+version: '3.5'
+services:
+
+    postgres:
+        image: postgres:alpine
+        restart: unless-stopped
+        environment:
+            - POSTGRES_PASSWORD=moodle
+            - POSTGRES_USER=moodle
+            - POSTGRES_DB=moodle
+        volumes:
+            - postgres:/var/lib/postgresql/data
+
+    moodle:
+        build:
+            target: dev
+            context: .
+            dockerfile: Dockerfile
+        restart: unless-stopped
+        env_file:
+            - .env
+        ports:
+            - 80:8080
+        volumes:
+            - ./data/data:/var/www/moodledata
+            - ./data/src:/var/www/html
+        depends_on:
+            - postgres
+
+volumes:
+    postgres: null
